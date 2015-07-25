@@ -1,3 +1,7 @@
 <div class='container'>
+    This is the dashboard.
+    <input type=text ng-model='newTitle'>
+    <button class='btn btn-success' ng-click='createProj(newTitle, getCurrentUser)'>Create Project</button>
     
+    <h1 ng-repeat='project in projects'>{{project.name}}</h1>
 </div>

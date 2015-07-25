@@ -54,6 +54,15 @@ exports.destroy = function(req, res) {
   });
 };
 
+// Get an array of projects based on an input array of IDs
+exports.userCheck = function(req, res) {
+  Project.find(req.body, function (err, projects) {
+    if(err) { return handleError(res, err); }
+    if(!projects) { return res.status(404).send('Not Found'); }
+    return res.json(projects);
+  });
+};
+
 function handleError(res, err) {
   return res.status(500).send(err);
 }
