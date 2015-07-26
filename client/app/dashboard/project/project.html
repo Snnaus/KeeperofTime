@@ -1,0 +1,13 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class='container'>
+    <ul>
+        <li>{{project.name}}</li>
+        <li>{{project.totaltime}}</li>
+    </ul>
+    
+    <h3>Messages</h3>
+    <ol>
+        <li ng-repeat='msg in project.messages'>{{msg}}</li>
+    </ol>
+</div>

@@ -10,5 +10,5 @@
         <button type='submit' class='btn btn-success'>Create Project</span></button>
      </form>
     
-    <h1 ng-repeat='project in projects'>{{project.name +" "+ project.totaltime}}</h1>
+    <h1 ng-repeat='project in projects'><a ng-href="/project/{{project['_id']}}">{{project.name +" "+ project.totaltime}}</a></h1>
 </div>
