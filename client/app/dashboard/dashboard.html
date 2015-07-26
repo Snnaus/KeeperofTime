@@ -1,7 +1,14 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
 <div class='container'>
     This is the dashboard.
-    <input type=text ng-model='newTitle'>
-    <button class='btn btn-success' ng-click='createProj(newTitle, getCurrentUser)'>Create Project</button>
     
-    <h1 ng-repeat='project in projects'>{{project.name}}</h1>
+    <form class='' role='search' ng-submit='createProj(newTitle, getCurrentUser)'>
+        <div class='form-group'>
+          <input type='text' class='form-control' placeholder='' ng-model='newTitle'>
+        </div>
+        <button type='submit' class='btn btn-success'>Create Project</span></button>
+     </form>
+    
+    <h1 ng-repeat='project in projects'>{{project.name +" "+ project.totaltime}}</h1>
 </div>

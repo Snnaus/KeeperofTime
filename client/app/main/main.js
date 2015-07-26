@@ -3,7 +3,7 @@
 angular.module('workspaceApp')
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/main', {
+      .when('/', {
         templateUrl: 'app/main/main.html',
         controller: 'MainCtrl'
       });
