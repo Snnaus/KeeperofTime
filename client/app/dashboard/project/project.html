@@ -2,12 +2,17 @@
 
 <div class='container'>
     <ul>
-        <li>{{project.name}}</li>
-        <li>{{project.totaltime}}</li>
+        <li>{{project[0].name}}</li>
+        <li>{{project[0].totaltime}}</li>
     </ul>
     
     <h3>Messages</h3>
     <ol>
-        <li ng-repeat='msg in project.messages'>{{msg}}</li>
+        <li ng-repeat='msg in project[0].messages track by $index'>{{msg}}</li>
     </ol>
+    <form ng-submit='sendMsg(project[0], newMsg)'>
+        <textarea id='msgArea' class="form-control" rows="3" ng-model='newMsg'></textarea>
+        <button class='btn btn-info'>Send</button>
+    </form>
+    
 </div>

@@ -44,6 +44,10 @@ exports.update = function(req, res) {
     if (err) { return handleError(res, err); }
     if(!project) { return res.status(404).send('Not Found'); }
     var updated = _.merge(project, req.body);
+    updated.markModified('managers');
+    updated.markModified('contributers');
+    updated.markModified('messages');
+    updated.markModified('timers');
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(project);

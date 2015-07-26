@@ -13,24 +13,35 @@ angular.module('workspaceApp')
     $scope.project = [];
     $scope.contrib = false;
     $scope.manage = false;
-    $http.get('/api/projects/'+$routeParams.id).success(function(project){
+    $http.post('/api/projects/user', { _id:$routeParams.id }).success(function(project){
       
       //These statements are checking to see of the current user is related to the
       //project; whether as a contributer or a manager.
-      if(project.contributers.indexOf($scope.getCurrentUser._id) !== -1){
+      
+      if(project[0].contributers.indexOf($scope.getCurrentUser._id) !== -1){
         $scope.contrib = true;
-      } else if(project.managers.indexOf($scope.getCurrentUser._id) !== -1){
+      } else if(project[0].managers.indexOf($scope.getCurrentUser._id) !== -1){
         $scope.manage = true;
       }
+      
       
       //This is the logic gate to stop unrelated users from viewing the content.
       if($scope.contrib || $scope.manage){
         $scope.project = project;
         socket.syncUpdates('project', $scope.project);
+        //socket.syncUpdates('project', $scope.project[0].messages);
+        console.log(project);
       } else{
         $location.path('/dashboard');
       }
     });
     
-    
+    $scope.newMsg = '';
+    $scope.sendMsg = function(project, message){
+      if(message){
+        project.messages.push(message);
+        $http.put('/api/projects/'+project._id, { messages: project.messages });
+        $('#msgArea').val('');
+      }
+    };
   });
