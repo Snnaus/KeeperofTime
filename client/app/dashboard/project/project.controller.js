@@ -14,6 +14,7 @@ angular.module('workspaceApp')
     $scope.contrib = false;
     $scope.manage = false;
     $scope.curTime = '';
+    $scope.timerOn = false;
     $http.post('/api/projects/user', { _id:$routeParams.id }).success(function(project){
       
       //These statements are checking to see of the current user is related to the
@@ -32,7 +33,7 @@ angular.module('workspaceApp')
         socket.syncUpdates('project', $scope.project);
         //socket.syncUpdates('project', $scope.project[0].messages);
         if(project[0].timers.length > 0 && project[0].timers[project[0].timers.length - 1][1] === 'running'){
-          $scope.project[0].timerOn = true;
+          $scope.timerOn = true;
         }
         console.log($scope.project);
       } else{
@@ -60,7 +61,7 @@ angular.module('workspaceApp')
         }
       }
       if(gateKey){
-        project.timerOn = true;
+        $scope.timerOn = true;
         var newTimer = [Date.now(), 'running'];
         project.timers.push(newTimer);
         $http.put('/api/projects/'+project._id, { timers: project.timers });
@@ -68,23 +69,23 @@ angular.module('workspaceApp')
     };
     
     $scope.pauseTimer = function(project){
-      project.timerOn = false;
+      $scope.timerOn = false;
       project.timers[project.timers.length - 1][1] = Date.now();
       $http.put('/api/projects/'+project._id, { timers: project.timers });
     };
     
     function timeCounter(){
       console.log($scope.project[0].timerOn);
-      if($scope.project[0].timerOn){
+      if($scope.timerOn){
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
         var x = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
         $('#curTime').text("Current time is: " + x.toString());
         
       }
-      
+    };
+    
     var timer = $interval(timeCounter, 250);
-    $scope.on('$destroy', function(){
+    $scope.$on('$destroy', function(){
       $interval.cancel(timer);
     });
-    };
   });
