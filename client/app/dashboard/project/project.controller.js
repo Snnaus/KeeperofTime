@@ -15,6 +15,7 @@ angular.module('workspaceApp')
     $scope.manage = false;
     $scope.curTime = '';
     $scope.timerOn = false;
+    $scope.totsTime = '';
     $http.post('/api/projects/user', { _id:$routeParams.id }).success(function(project){
       
       //These statements are checking to see of the current user is related to the
@@ -34,6 +35,8 @@ angular.module('workspaceApp')
         //socket.syncUpdates('project', $scope.project[0].messages);
         if(project[0].timers.length > 0 && project[0].timers[project[0].timers.length - 1][1] === 'running'){
           $scope.timerOn = true;
+        } else{
+          $scope.totsTime = formatTime(addTotalTime(project[0].timers));
         }
         console.log($scope.project);
       } else{
@@ -100,7 +103,7 @@ angular.module('workspaceApp')
         
         if(millis/60>60){
           var hours = parseInt(minutes/60).toString() + ':';
-          if(minutes<10){
+          if(minutes%60<10){
             minutes = '0' + parseInt(minutes%60).toString();
           }else{
             minutes = parseInt(minutes%60).toString();
