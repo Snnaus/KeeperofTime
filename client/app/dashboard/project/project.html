@@ -11,13 +11,23 @@
     <button id=timerPause class='btn btn-warning' ng-click='pauseTimer(project[0])' ng-show='project[0].timerOn'>Pause</button>
     <button id=projClose class='btn btn-danger' ng-click='closeProj(project[0])'>Close Project</button>
     
-    <h3>Messages</h3>
-    <ol>
-        <li ng-repeat='msg in project[0].messages track by $index'>{{msg}}</li>
-    </ol>
-    <form ng-submit='sendMsg(project[0], newMsg)'>
-        <textarea id='msgArea' class="form-control" rows="3" ng-model='newMsg'></textarea>
-        <button class='btn btn-info'>Send</button>
-    </form>
+    <div class='row'>
+        <div class='col-lg-6'>
+            <h3>Messages</h3>
+            <ol>
+                <li ng-repeat='msg in project[0].messages track by $index'>{{msg}}</li>
+            </ol>
+            <form ng-submit='sendMsg(project[0], newMsg)'>
+               <textarea id='msgArea' class="form-control" rows="3" ng-model='newMsg'></textarea>
+                <button class='btn btn-info'>Send</button>
+            </form>
+        </div>
+        <div class='col-lg-6'>
+            <h3>Past Timers</h3>
+            <ol>
+                <li ng-repeat='timer in project[0].timers track by $index' ng-bind='timer | dateFormat'></li>
+            </ol>
+        </div>
+    </div>
     
 </div>
