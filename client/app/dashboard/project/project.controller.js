@@ -32,13 +32,12 @@ angular.module('workspaceApp')
       if($scope.contrib || $scope.manage){
         $scope.project = project;
         socket.syncUpdates('project', $scope.project);
-        //socket.syncUpdates('project', $scope.project[0].messages);
         if(project[0].timers.length > 0 && project[0].timers[project[0].timers.length - 1][1] === 'running'){
           $scope.timerOn = true;
         } else{
           $scope.totsTime = formatTime(addTotalTime(project[0].timers));
         }
-        console.log($scope.project);
+        //console.log($scope.project);
       } else{
         $location.path('/dashboard');
       }
