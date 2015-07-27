@@ -11,7 +11,7 @@ var ProjectSchema = new Schema({
   totaltime: Number,
   contributers: Array,
   managers: Array,
-  messages: Array
+  messages: Array,
 });
 
 module.exports = mongoose.model('Project', ProjectSchema);

@@ -7,8 +7,8 @@
     </ul>
     
     <h1 id=curTime>Current Time is: 0</h1>
-    <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0])' ng-hide='timerOn'>Start</button>
-    <button id=timerPause class='btn btn-warning' ng-click='pauseTimer(project[0])' ng-show='timerOn'>Pause</button>
+    <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0])' ng-hide='project[0].timerOn'>Start</button>
+    <button id=timerPause class='btn btn-warning' ng-click='pauseTimer(project[0])' ng-show='project[0].timerOn'>Pause</button>
     <button id=projClose class='btn btn-danger' ng-click='closeProj(project[0])'>Close Project</button>
     
     <h3>Messages</h3>

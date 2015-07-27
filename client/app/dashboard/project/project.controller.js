@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('workspaceApp')
-  .controller('ProjectCtrl', function ($scope, $routeParams, socket, Auth, $http, $location) {
+  .controller('ProjectCtrl', function ($scope, $routeParams, socket, Auth, $http, $location, $interval) {
     $scope.isLoggedIn = Auth.isLoggedIn();
     $scope.isAdmin = Auth.isAdmin();
     $scope.getCurrentUser = Auth.getCurrentUser();
@@ -13,7 +13,6 @@ angular.module('workspaceApp')
     $scope.project = [];
     $scope.contrib = false;
     $scope.manage = false;
-    $scope.timerOn = false;
     $scope.curTime = '';
     $http.post('/api/projects/user', { _id:$routeParams.id }).success(function(project){
       
@@ -33,8 +32,9 @@ angular.module('workspaceApp')
         socket.syncUpdates('project', $scope.project);
         //socket.syncUpdates('project', $scope.project[0].messages);
         if(project[0].timers.length > 0 && project[0].timers[project[0].timers.length - 1][1] === 'running'){
-          $scope.timerOn = true;
+          $scope.project[0].timerOn = true;
         }
+        console.log($scope.project);
       } else{
         $location.path('/dashboard');
       }
@@ -51,25 +51,40 @@ angular.module('workspaceApp')
     
     
     $scope.startTimer = function(project){
-      $scope.timerOn = true;
-      var newTimer = [Date.now(), 'running'];
-      project.timers.push(newTimer);
-      $http.put('/api/projects/'+project._id, { timers: project.timers });
+      var gateKey = false;
+      if(project.timers.length < 1){
+        gateKey = true;
+      } else {
+        if(project.timers[project.timers.length - 1][1] !== 'running'){
+          gateKey = true;
+        }
+      }
+      if(gateKey){
+        project.timerOn = true;
+        var newTimer = [Date.now(), 'running'];
+        project.timers.push(newTimer);
+        $http.put('/api/projects/'+project._id, { timers: project.timers });
+      }
     };
     
     $scope.pauseTimer = function(project){
-      $scope.timerOn = false;
+      project.timerOn = false;
       project.timers[project.timers.length - 1][1] = Date.now();
       $http.put('/api/projects/'+project._id, { timers: project.timers });
     };
     
-    var timeCounter = function(){
-      if($scope.timerOn){
+    function timeCounter(){
+      console.log($scope.project[0].timerOn);
+      if($scope.project[0].timerOn){
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
         var x = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
         $('#curTime').text("Current time is: " + x.toString());
+        
       }
+      
+    var timer = $interval(timeCounter, 250);
+    $scope.on('$destroy', function(){
+      $interval.cancel(timer);
+    });
     };
-    
-    var timer = setInterval(timeCounter, 250);
   });
