@@ -29,6 +29,7 @@ angular.module('workspaceApp')
         info: '',
         active: true,
         timers: [],
+        timerOn: false,
         totaltime: 0,
         contributers: [user._id],
         managers: [],

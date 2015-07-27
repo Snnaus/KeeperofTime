@@ -9,6 +9,7 @@ var ProjectSchema = new Schema({
   active: Boolean,
   timers: Array,
   totaltime: Number,
+  timerOn: Boolean,
   contributers: Array,
   managers: Array,
   messages: Array,

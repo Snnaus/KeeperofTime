@@ -61,29 +61,39 @@ angular.module('workspaceApp')
         }
       }
       if(gateKey){
-        $scope.timerOn = true;
+        //$scope.timerOn = true;
         var newTimer = [Date.now(), 'running'];
         project.timers.push(newTimer);
-        $http.put('/api/projects/'+project._id, { timers: project.timers });
+        $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: true });
       }
     };
     
     $scope.pauseTimer = function(project){
-      $scope.timerOn = false;
+      //$scope.timerOn = false;
       project.timers[project.timers.length - 1][1] = Date.now();
-      $http.put('/api/projects/'+project._id, { timers: project.timers });
+      $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: false });
     };
     
     function timeCounter(){
       console.log($scope.project[0].timerOn);
-      if($scope.timerOn){
+      if($scope.project[0].timerOn){
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
         var x = (Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]))/1000;
-        var seconds = parseInt(x%60);
+        var seconds = parseInt(x%60), minutes = parseInt(x/60);
         if(seconds < 10){
           seconds = '0' + seconds.toString();
         }
-        x = parseInt(x/60).toString() + ":" + seconds.toString();
+        
+        if(x/60>60){
+          var hours = parseInt(minutes/60).toString() + ':';
+          if(minutes<10){
+            minutes = '0' + parseInt(minutes%60).toString();
+          }else{
+            minutes = parseInt(minutes%60).toString();
+          }
+          minutes = hours + minutes;
+        }
+        x =  minutes.toString() + ":" + seconds.toString();
         $('#curTime').text("Current time is: " + x);
         
       }
