@@ -78,11 +78,16 @@ angular.module('workspaceApp')
       console.log($scope.project[0].timerOn);
       if($scope.timerOn){
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
-        var x = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
-        $('#curTime').text("Current time is: " + x.toString());
+        var x = (Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]))/1000;
+        var seconds = parseInt(x%60);
+        if(seconds < 10){
+          seconds = '0' + seconds.toString();
+        }
+        x = parseInt(x/60).toString() + ":" + seconds.toString();
+        $('#curTime').text("Current time is: " + x);
         
       }
-    };
+    }
     
     var timer = $interval(timeCounter, 250);
     $scope.$on('$destroy', function(){
