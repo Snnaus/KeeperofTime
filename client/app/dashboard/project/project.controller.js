@@ -13,6 +13,8 @@ angular.module('workspaceApp')
     $scope.project = [];
     $scope.contrib = false;
     $scope.manage = false;
+    $scope.timerOn = false;
+    $scope.curTime = '';
     $http.post('/api/projects/user', { _id:$routeParams.id }).success(function(project){
       
       //These statements are checking to see of the current user is related to the
@@ -30,7 +32,9 @@ angular.module('workspaceApp')
         $scope.project = project;
         socket.syncUpdates('project', $scope.project);
         //socket.syncUpdates('project', $scope.project[0].messages);
-        console.log(project);
+        if(project[0].timers.length > 0 && project[0].timers[project[0].timers.length - 1][1] === 'running'){
+          $scope.timerOn = true;
+        }
       } else{
         $location.path('/dashboard');
       }
@@ -44,4 +48,28 @@ angular.module('workspaceApp')
         $('#msgArea').val('');
       }
     };
+    
+    
+    $scope.startTimer = function(project){
+      $scope.timerOn = true;
+      var newTimer = [Date.now(), 'running'];
+      project.timers.push(newTimer);
+      $http.put('/api/projects/'+project._id, { timers: project.timers });
+    };
+    
+    $scope.pauseTimer = function(project){
+      $scope.timerOn = false;
+      project.timers[project.timers.length - 1][1] = Date.now();
+      $http.put('/api/projects/'+project._id, { timers: project.timers });
+    };
+    
+    var timeCounter = function(){
+      if($scope.timerOn){
+        //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
+        var x = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
+        $('#curTime').text("Current time is: " + x.toString());
+      }
+    };
+    
+    var timer = setInterval(timeCounter, 250);
   });
