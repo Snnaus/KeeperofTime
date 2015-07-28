@@ -10,22 +10,24 @@
         </div>
         
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
-            <form class='' role='search' ng-submit='inviteUser(addUser, role, project[0])'>
+            <form class='' role='search' ng-submit='inviteUser(addUser, role, project[0])' ng-hide='preview'>
                 <div class='form-group'>
                   <input type='text' class='form-control' placeholder='' ng-model='addUser'>
-                  <input type='text' class='form-control' placeholder="('contrib' or 'manage')" ng-model='role'>
+                  <input type='text' class='form-control' placeholder="('contributer' or 'manager')" ng-model='role'>
                 </div>
                 <button type='submit' class='btn btn-info'>Add User to Project</span></button>
              </form>
+             <button class='btn btn-success' ng-show='preview' ng-click='acceptInv(preview, getCurrentUser, project[0])'>Join Project as a {{preview.role}}</button>
+             <button class='btn btn-danger' ng-show='preview' ng-click='declineInv(preview, project[0])'>Decline</button>
         </div>
         
     </div>
     
     
     <h1 id=curTime>Current Time is: 0:00</h1>
-    <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0])' ng-hide='project[0].timerOn'>Start</button>
-    <button id=timerPause class='btn btn-warning' ng-click='pauseTimer(project[0])' ng-show='project[0].timerOn'>Pause</button>
-    <button id=projClose class='btn btn-danger' ng-click='closeProj(project[0])'>Close Project</button>
+    <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0])' ng-hide='project[0].timerOn || preview'>Start</button>
+    <button id=timerPause class='btn btn-warning' ng-click='pauseTimer(project[0])' ng-show='project[0].timerOn && !preview'>Pause</button>
+    <button id=projClose class='btn btn-danger' ng-click='closeProj(project[0])' ng-hide='preview'>Close Project</button>
     
     <div class='row'>
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
@@ -33,7 +35,7 @@
             <ol>
                 <li ng-repeat='msg in project[0].messages track by $index'>{{msg}}</li>
             </ol>
-            <form ng-submit='sendMsg(project[0], newMsg)'>
+            <form ng-submit='sendMsg(project[0], newMsg)' ng-hide='preview'>
                <textarea id='msgArea' class="form-control" rows="3" ng-model='newMsg'></textarea>
                 <button class='btn btn-info'>Send</button>
             </form>

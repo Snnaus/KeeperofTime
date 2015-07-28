@@ -25,6 +25,7 @@ angular.module('workspaceApp')
     });
     $http.post('/api/projects/user', { 'invites.invited': $scope.getCurrentUser.email }).success(function(projects){
       $scope.invited = projects;
+      socket.syncUpdates('project', $scope.invited);
     });
     
     

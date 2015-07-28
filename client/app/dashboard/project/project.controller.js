@@ -29,7 +29,7 @@ angular.module('workspaceApp')
       }else{
         project[0].invites.forEach(function(invite){
           if(invite.invited === $scope.getCurrentUser.email){
-            $scope.preview = true;
+            $scope.preview = invite;
           }
         });
       }
@@ -80,7 +80,6 @@ angular.module('workspaceApp')
       //$scope.timerOn = false;
       project.timers[project.timers.length - 1][1] = Date.now();
       var totalTimers = addTotalTime(project.timers);
-      console.log(totalTimers);
       $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: false, totaltime: totalTimers });
     };
     
@@ -132,7 +131,7 @@ angular.module('workspaceApp')
     }
     
     $scope.inviteUser = function(email, role, project){
-      if(role === 'contrib' || role === 'manage'){
+      if(role === 'contributer' || role === 'manager'){
         var inv = {
           invited: email,
           inviter: $scope.getCurrentUser.email,
@@ -140,8 +139,44 @@ angular.module('workspaceApp')
           role: role
         };
         project.invites.push(inv);
-        console.log(project.invites);
         $http.put('/api/projects/'+project._id, { invites: project.invites });
       }
+    }
+    
+    //adds the user to one of the main lists before passing the invite on to be
+    //deleted.
+    $scope.acceptInv = function(invite, user, project){
+      if(invite.role === 'manager' || invite.role === 'manage'){
+        project.managers.push(user._id);
+      } else if(invite.role === 'contributer' || invite.role === 'contrib'){
+        project.contributers.push(user._id);
+      }
+      updateConMan(project, invite);
+    };
+    
+    //simply passes the porject and invite to the update function (to be deleted)
+    //without adding them to either main array.
+    $scope.declineInv = function(invite, project){
+      updateConMan(project, invite);
+    };
+    
+    //This function looks to delete the invite from the project and technically updates
+    //the manager and contributer arrays.
+    function updateConMan(project, invite){
+      var index = -1;
+      for(var i = 0; i<project.invites.length; i++){
+        if(project.invites[i].invited === invite.invited){
+          index = i;
+        }
+      }
+      //var garbage = project.invites.splice(index, 1);
+      project.invites[index] = undefined;
+      $http.put('/api/projects/'+project._id, { 
+        managers: project.managers, 
+        contributers: project.contributers,
+        invites: project.invites
+      });
+      //$http.post('/api/projects/user', { $pull: { "": { invited: invite.invited } } });
+      $location.path('/projects/'+project._id);
     }
   });
