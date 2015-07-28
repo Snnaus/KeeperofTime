@@ -6,16 +6,17 @@ angular.module('workspaceApp')
     $scope.isAdmin = Auth.isAdmin();
     $scope.getCurrentUser = Auth.getCurrentUser();
     
-    if(!$scope.isLoggedIn){
-      $location.path('/login');
-    }
+    
     
     $scope.project = [];
     $scope.contrib = false;
     $scope.manage = false;
+    $scope.preview = false;
     $scope.curTime = '';
     $scope.timerOn = false;
     $scope.totsTime = '';
+    $scope.addUser = '';
+    $scope.role = '';
     $http.post('/api/projects/user', { _id:$routeParams.id }).success(function(project){
       
       //These statements are checking to see of the current user is related to the
@@ -25,11 +26,17 @@ angular.module('workspaceApp')
         $scope.contrib = true;
       } else if(project[0].managers.indexOf($scope.getCurrentUser._id) !== -1){
         $scope.manage = true;
+      }else{
+        project[0].invites.forEach(function(invite){
+          if(invite.invited === $scope.getCurrentUser.email){
+            $scope.preview = true;
+          }
+        });
       }
       
       
       //This is the logic gate to stop unrelated users from viewing the content.
-      if($scope.contrib || $scope.manage){
+      if($scope.contrib || $scope.manage || $scope.preview){
         $scope.project = project;
         socket.syncUpdates('project', $scope.project);
         if(project[0].timers.length > 0 && project[0].timers[project[0].timers.length - 1][1] === 'running'){
@@ -37,7 +44,7 @@ angular.module('workspaceApp')
         } else{
           $scope.totsTime = formatTime(addTotalTime(project[0].timers));
         }
-        //console.log($scope.project);
+        console.log($scope.project, $scope.getCurrentUser);
       } else{
         $location.path('/dashboard');
       }
@@ -122,5 +129,19 @@ angular.module('workspaceApp')
         }
       }, 0);
       return total;
+    }
+    
+    $scope.inviteUser = function(email, role, project){
+      if(role === 'contrib' || role === 'manage'){
+        var inv = {
+          invited: email,
+          inviter: $scope.getCurrentUser.email,
+          accepted: false,
+          role: role
+        };
+        project.invites.push(inv);
+        console.log(project.invites);
+        $http.put('/api/projects/'+project._id, { invites: project.invites });
+      }
     }
   });

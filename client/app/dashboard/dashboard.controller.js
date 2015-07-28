@@ -15,6 +15,7 @@ angular.module('workspaceApp')
     $scope.newTitle = '';
     $scope.projects = [];
     $scope.managing = [];
+    $scope.invited = [];
     $http.post('/api/projects/user', { contributers: [$scope.getCurrentUser._id] }).success(function(projects){
       $scope.projects = projects;
       socket.syncUpdates('project', $scope.projects);
@@ -22,6 +23,10 @@ angular.module('workspaceApp')
     $http.post('/api/projects/user', { managers: [$scope.getCurrentUser._id] }).success(function(projects){
       $scope.managing = projects;
     });
+    $http.post('/api/projects/user', { 'invites.invited': $scope.getCurrentUser.email }).success(function(projects){
+      $scope.invited = projects;
+    });
+    
     
     $scope.createProj = function(name, user){
       var newProj = {
@@ -33,7 +38,8 @@ angular.module('workspaceApp')
         totaltime: 0,
         contributers: [user._id],
         managers: [],
-        messages: []
+        messages: [],
+        invited: []
       };
       $http.post('/api/projects', newProj);
     };

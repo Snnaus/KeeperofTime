@@ -1,10 +1,26 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
 <div class='container'>
-    <ul>
-        <li>{{project[0].name}}</li>
-        <li id=totTime>{{totsTime}}</li>
-    </ul>
+    <div class='row'>
+        <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
+            <ul>
+                <li>{{project[0].name}}</li>
+                <li id=totTime>{{totsTime}}</li>
+            </ul>
+        </div>
+        
+        <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
+            <form class='' role='search' ng-submit='inviteUser(addUser, role, project[0])'>
+                <div class='form-group'>
+                  <input type='text' class='form-control' placeholder='' ng-model='addUser'>
+                  <input type='text' class='form-control' placeholder="('contrib' or 'manage')" ng-model='role'>
+                </div>
+                <button type='submit' class='btn btn-info'>Add User to Project</span></button>
+             </form>
+        </div>
+        
+    </div>
+    
     
     <h1 id=curTime>Current Time is: 0:00</h1>
     <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0])' ng-hide='project[0].timerOn'>Start</button>
@@ -12,7 +28,7 @@
     <button id=projClose class='btn btn-danger' ng-click='closeProj(project[0])'>Close Project</button>
     
     <div class='row'>
-        <div class='col-lg-6'>
+        <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
             <h3>Messages</h3>
             <ol>
                 <li ng-repeat='msg in project[0].messages track by $index'>{{msg}}</li>
@@ -22,7 +38,7 @@
                 <button class='btn btn-info'>Send</button>
             </form>
         </div>
-        <div class='col-lg-6'>
+        <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
             <h3>Past Timers</h3>
             <ol>
                 <li ng-repeat='timer in project[0].timers track by $index' ng-bind='timer | dateFormat'></li>

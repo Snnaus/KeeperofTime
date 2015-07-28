@@ -13,6 +13,7 @@ var ProjectSchema = new Schema({
   contributers: Array,
   managers: Array,
   messages: Array,
+  invites: Array
 });
 
 module.exports = mongoose.model('Project', ProjectSchema);

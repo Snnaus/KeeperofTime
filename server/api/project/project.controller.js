@@ -48,6 +48,7 @@ exports.update = function(req, res) {
     updated.markModified('contributers');
     updated.markModified('messages');
     updated.markModified('timers');
+    updated.markModified('invites');
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(project);
