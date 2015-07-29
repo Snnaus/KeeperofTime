@@ -17,7 +17,7 @@ angular.module('workspaceApp')
     $scope.totsTime = '';
     $scope.addUser = '';
     $scope.role = '';
-    $http.post('/api/projects/user', { _id:$routeParams.id }).success(function(project){
+    $http.post('/api/projects/user', { _id: $routeParams.id }).success(function(project){
       
       //These statements are checking to see of the current user is related to the
       //project; whether as a contributer or a manager.
@@ -44,7 +44,7 @@ angular.module('workspaceApp')
         } else{
           $scope.totsTime = formatTime(addTotalTime(project[0].timers));
         }
-        console.log($scope.project, $scope.getCurrentUser);
+        //console.log($scope.project, $scope.getCurrentUser);
       } else{
         $location.path('/dashboard');
       }
@@ -131,7 +131,9 @@ angular.module('workspaceApp')
     }
     
     $scope.inviteUser = function(email, role, project){
-      if(role === 'contributer' || role === 'manager'){
+      var check = project.invites.filter(function(invite){return invite.invited === email});
+      var role_check = role === 'contributer' || role === 'manager'
+      if(check.length < 1 && role_check){
         var inv = {
           invited: email,
           inviter: $scope.getCurrentUser.email,
@@ -169,14 +171,14 @@ angular.module('workspaceApp')
           index = i;
         }
       }
-      //var garbage = project.invites.splice(index, 1);
-      project.invites[index] = undefined;
+      var garbage = project.invites.splice(index, 1);
+      //project.invites[index] = undefined;
       $http.put('/api/projects/'+project._id, { 
         managers: project.managers, 
         contributers: project.contributers,
         invites: project.invites
       });
-      //$http.post('/api/projects/user', { $pull: { "": { invited: invite.invited } } });
+      //$http.post('/api/projects/user', { });
       $location.path('/projects/'+project._id);
     }
   });

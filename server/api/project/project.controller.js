@@ -43,13 +43,14 @@ exports.update = function(req, res) {
   Project.findById(req.params.id, function (err, project) {
     if (err) { return handleError(res, err); }
     if(!project) { return res.status(404).send('Not Found'); }
-    var updated = _.merge(project, req.body);
+    /*var updated = _.merge(project, req.body);
     updated.markModified('managers');
     updated.markModified('contributers');
     updated.markModified('messages');
     updated.markModified('timers');
-    updated.markModified('invites');
-    updated.save(function (err) {
+    updated.markModified('invites');*/
+    _.extend(project, req.body);
+    project.save(function (err) {
       if (err) { return handleError(res, err); }
       return res.status(200).json(project);
     });
@@ -68,13 +69,23 @@ exports.destroy = function(req, res) {
   });
 };
 
-// Get an array of projects based on an input array of IDs
+// Get an array of projects based on an input query
 exports.userCheck = function(req, res) {
   Project.find(req.body, function (err, projects) {
     if(err) { return handleError(res, err); }
     if(!projects) { return res.status(404).send('Not Found'); }
     return res.json(projects);
   });
+};
+
+//remove invites from a projects invites array
+exports.removeInvs = function(req, res){
+  Project.findById(req.params.id, function(err, project){
+    if(err){ return handleError(res, err); }
+    if(!project){ return res.status(404).send('Not Found'); }
+    project.update(req.body);
+  })
+  
 };
 
 function handleError(res, err) {
