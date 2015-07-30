@@ -12,7 +12,7 @@
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
             <form class='' role='search' ng-submit='inviteUser(addUser, role, project[0])' ng-hide='preview'>
                 <div class='form-group'>
-                  <input type='text' class='form-control' placeholder='' ng-model='addUser'>
+                  <input type='text' class='form-control' placeholder='(User Email)' ng-model='addUser'>
                   <input type='radio' value='manager' ng-model=role>Manager
                   <input type='radio' value='contributer' ng-model=role> Contributer
                 </div>
@@ -28,7 +28,7 @@
     <h1 id=curTime>Current Time is: 0:00</h1>
     <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0])' ng-hide='project[0].timerOn || preview'>Start</button>
     <button id=timerPause class='btn btn-warning' ng-click='pauseTimer(project[0])' ng-show='project[0].timerOn && !preview'>Pause</button>
-    <button id=projClose class='btn btn-danger' ng-click='closeProj(project[0])' ng-hide='preview'>Close Project</button>
+    <button id=projClose class='btn btn-danger' ng-click='closeProject(project[0])' ng-hide='preview'>Close Project</button>
     
     <div class='row'>
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>

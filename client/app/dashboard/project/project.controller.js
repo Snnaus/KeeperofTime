@@ -181,4 +181,18 @@ angular.module('workspaceApp')
       //$http.post('/api/projects/user', { });
       $location.path('/projects/'+project._id);
     }
+    
+    //This function is used to close a project; it should end the a timer if it is running;
+    //it will set the project.active as false
+    $scope.closeProject = function(project){
+      var result = window.confirm("Are you sure you want to close this Project?");
+      if(result){
+        if(project.timers[project.timers.length-1][1] === 'running'){
+          project.timerOn = false
+          project.timers[project.timers.length-1][1] = Date.now();
+          project.totaltime = addTotalTime(project.timers);
+        }
+        $http.put('/api/projects/'+project._id, { active: false, timers: project.timers, totaltime: project.totaltime, timerOn: false });
+      }
+    };
   });
