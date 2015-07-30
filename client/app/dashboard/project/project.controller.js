@@ -52,8 +52,9 @@ angular.module('workspaceApp')
     
     //This is the function that updates the projects message array, in order to have a realtime chat (sort of).
     $scope.newMsg = '';
-    $scope.sendMsg = function(project, message){
+    $scope.sendMsg = function(project, message, user){
       if(message){
+        message = [user.name, message, Date.now(), user._id];
         project.messages.push(message);
         $http.put('/api/projects/'+project._id, { messages: project.messages });
         $('#msgArea').val('');
@@ -91,7 +92,7 @@ angular.module('workspaceApp')
     function timeCounter(){
       if($scope.project[0].timerOn){
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
-        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]))
+        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]));
         var x = formatTime(currTime), totTime = formatTime($scope.project[0].totaltime + currTime);
         
         $('#curTime').text("Current time is: " + x);
@@ -201,5 +202,15 @@ angular.module('workspaceApp')
         }
         $http.put('/api/projects/'+project._id, { active: false, timers: project.timers, totaltime: project.totaltime, timerOn: false });
       }
+    };
+    
+    //this function is to format the comment post time to be readable
+    $scope.formatCmtTime = function(time){
+      var postTime = new Date(time);
+      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      var time = parseInt(postTime.getHours()) + ':' + parseInt(postTime.getMinutes()),
+      date = "\t" + months[postTime.getMonth()] + " " + parseInt(postTime.getDate());
+      
+      return date + time;
     };
   });
