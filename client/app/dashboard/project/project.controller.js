@@ -50,6 +50,7 @@ angular.module('workspaceApp')
       }
     });
     
+    //This is the function that updates the projects message array, in order to have a realtime chat (sort of).
     $scope.newMsg = '';
     $scope.sendMsg = function(project, message){
       if(message){
@@ -59,6 +60,7 @@ angular.module('workspaceApp')
       }
     };
     
+    //this creates a new timer array within the projects timers
     $scope.startTimer = function(project){
       var gateKey = false;
       if(project.timers.length < 1){
@@ -76,6 +78,7 @@ angular.module('workspaceApp')
       }
     };
     
+    //this stops the latest timer array
     $scope.pauseTimer = function(project){
       //$scope.timerOn = false;
       project.timers[project.timers.length - 1][1] = Date.now();
@@ -83,6 +86,8 @@ angular.module('workspaceApp')
       $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: false, totaltime: totalTimers });
     };
     
+    //if the current project has a timer on it will then count up and format the time;
+    //used in the interval
     function timeCounter(){
       if($scope.project[0].timerOn){
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
@@ -99,6 +104,7 @@ angular.module('workspaceApp')
       $interval.cancel(timer);
     });
     
+    //takes millisecond and formats them to look good and readable.
     function formatTime(millis){
       millis = millis/1000;
       var seconds = parseInt(millis%60), minutes = parseInt(millis/60);
@@ -118,6 +124,7 @@ angular.module('workspaceApp')
         return minutes.toString() + ":" + seconds.toString();
     }
     
+    //Adds all the time that the timers has been on
     function addTotalTime(timers){
       //console.log(timers)
       var total = timers.reduce(function(agg, curr){
