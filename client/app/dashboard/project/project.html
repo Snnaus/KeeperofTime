@@ -4,7 +4,7 @@
     <div class='row'>
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
             <ul>
-                <li>{{project[0].name}}</li>
+                <li><a href='/profile/{{project[0].contributers[0]}}'>{{project[0].name}}</a></li>
                 <li id=totTime>{{totsTime}}</li>
             </ul>
         </div>
@@ -21,13 +21,12 @@
              <button class='btn btn-success' ng-show='preview' ng-click='acceptInv(preview, getCurrentUser, project[0])'>Join Project as a {{preview.role}}</button>
              <button class='btn btn-danger' ng-show='preview' ng-click='declineInv(preview, project[0])'>Decline</button>
         </div>
-        
     </div>
     
     
     <h1 id=curTime>Current Time is: 0:00</h1>
     <div id=buttonContainer ng-hide="!contrib || !project[0].active">
-        <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0])' ng-hide='project[0].timerOn'>Start</button>
+        <button id=timerStart class='btn btn-success' ng-click='startTimer(project[0], getCurrentUser)' ng-hide='project[0].timerOn'>Start</button>
         <button id=timerPause class='btn btn-warning' ng-click='pauseTimer(project[0])' ng-show='project[0].timerOn'>Pause</button>
         <button id=projClose class='btn btn-danger' ng-click='closeProject(project[0])'>Close Project</button>
     </div>
@@ -46,7 +45,7 @@
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
             <h3>Past Timers</h3>
             <ol>
-                <li ng-repeat='timer in project[0].timers track by $index' ng-bind='timer | dateFormat'></li>
+                <li ng-repeat='timer in project[0].timers track by $index' ng-bind='[timer.start, timer.end] | dateFormat'></li>
             </ol>
         </div>
     </div>

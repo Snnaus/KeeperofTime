@@ -70,5 +70,10 @@ angular.module('workspaceApp')
         invited: []
       };
       $http.post('/api/projects', newProj);
+      $http.post('/api/projects/user', { contributers: user._id }).success(function(projects){
+      var theOne = projects.filter(function(project){return user.contributing.indexOf(project._id) === -1});
+      user.contributing.push(theOne[0]._id);
+      $http.post('api/users/'+user._id, { contributing: user.contributing });
+      });
     };
   });

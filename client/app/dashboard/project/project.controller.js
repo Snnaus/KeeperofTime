@@ -62,18 +62,23 @@ angular.module('workspaceApp')
     };
     
     //this creates a new timer array within the projects timers
-    $scope.startTimer = function(project){
+    $scope.startTimer = function(project, user){
       var gateKey = false;
       if(project.timers.length < 1){
         gateKey = true;
       } else {
-        if(project.timers[project.timers.length - 1][1] !== 'running'){
+        if(project.timers[project.timers.length - 1].end !== 'running'){
           gateKey = true;
         }
       }
       if(gateKey){
         //$scope.timerOn = true;
-        var newTimer = [Date.now(), 'running'];
+        var newTimer = {
+          start: Date.now(),
+          end: 'running',
+          title: '',
+          user: user._id
+        };
         project.timers.push(newTimer);
         $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: true });
       }
@@ -82,7 +87,7 @@ angular.module('workspaceApp')
     //this stops the latest timer array
     $scope.pauseTimer = function(project){
       //$scope.timerOn = false;
-      project.timers[project.timers.length - 1][1] = Date.now();
+      project.timers[project.timers.length - 1].end = Date.now();
       var totalTimers = addTotalTime(project.timers);
       $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: false, totaltime: totalTimers });
     };
@@ -92,7 +97,7 @@ angular.module('workspaceApp')
     function timeCounter(){
       if($scope.project[0].timerOn){
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
-        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]));
+        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1].start));
         var x = formatTime(currTime), totTime = formatTime($scope.project[0].totaltime + currTime);
         
         $('#curTime').text("Current time is: " + x);
@@ -129,8 +134,8 @@ angular.module('workspaceApp')
     function addTotalTime(timers){
       //console.log(timers)
       var total = timers.reduce(function(agg, curr){
-        if(curr[1] !== 'running'){
-          return agg + Number(curr[1]) - Number(curr[0]);
+        if(curr.end !== 'running'){
+          return agg + Number(curr.end) - Number(curr.start);
         } else{
           return agg;
         }
@@ -158,21 +163,23 @@ angular.module('workspaceApp')
     $scope.acceptInv = function(invite, user, project){
       if(invite.role === 'manager' || invite.role === 'manage'){
         project.managers.push(user._id);
+        user.managing.push(project._id);
       } else if(invite.role === 'contributer' || invite.role === 'contrib'){
         project.contributers.push(user._id);
+        user.contributing.push(project._id);
       }
-      updateConMan(project, invite);
+      updateConMan(project, invite, user);
     };
     
     //simply passes the porject and invite to the update function (to be deleted)
     //without adding them to either main array.
-    $scope.declineInv = function(invite, project){
-      updateConMan(project, invite);
+    $scope.declineInv = function(invite, project, user){
+      updateConMan(project, invite, user);
     };
     
     //This function looks to delete the invite from the project and technically updates
     //the manager and contributer arrays.
-    function updateConMan(project, invite){
+    function updateConMan(project, invite, user){
       var index = -1;
       for(var i = 0; i<project.invites.length; i++){
         if(project.invites[i].invited === invite.invited){
@@ -180,13 +187,12 @@ angular.module('workspaceApp')
         }
       }
       var garbage = project.invites.splice(index, 1);
-      //project.invites[index] = undefined;
       $http.put('/api/projects/'+project._id, { 
         managers: project.managers, 
         contributers: project.contributers,
         invites: project.invites
       });
-      //$http.post('/api/projects/user', { });
+      $http.post('/api/users/'+user._id, { managing: user.managing, contributing: user.contributing });
       $location.path('/projects/'+project._id);
     }
     
@@ -195,9 +201,9 @@ angular.module('workspaceApp')
     $scope.closeProject = function(project){
       var result = window.confirm("Are you sure you want to close this Project?");
       if(result){
-        if(project.timers[project.timers.length-1][1] === 'running'){
+        if(project.timers[project.timers.length-1].end === 'running'){
           project.timerOn = false
-          project.timers[project.timers.length-1][1] = Date.now();
+          project.timers[project.timers.length-1].end = Date.now();
           project.totaltime = addTotalTime(project.timers);
         }
         $http.put('/api/projects/'+project._id, { active: false, timers: project.timers, totaltime: project.totaltime, timerOn: false });
