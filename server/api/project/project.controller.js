@@ -78,16 +78,6 @@ exports.userCheck = function(req, res) {
   });
 };
 
-//remove invites from a projects invites array
-exports.removeInvs = function(req, res){
-  Project.findById(req.params.id, function(err, project){
-    if(err){ return handleError(res, err); }
-    if(!project){ return res.status(404).send('Not Found'); }
-    project.update(req.body);
-  })
-  
-};
-
 function handleError(res, err) {
   return res.status(500).send(err);
 }
