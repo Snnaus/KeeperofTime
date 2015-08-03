@@ -39,9 +39,11 @@ angular.module('workspaceApp')
       if($scope.contrib || $scope.manage || $scope.preview){
         $scope.project = project;
         socket.syncUpdates('project', $scope.project);
-        if(project[0].timers.length > 0 && project[0].timers[project[0].timers.length - 1][1] === 'running'){
+        
+        var timerCheck = project[0].timers.filter(function(timer){ return timer.user === $scope.getCurrentUser._id && timer.end === 'running'  });
+        if(timerCheck.length > 0){
           $scope.timerOn = true;
-        } else{
+        } else {
           $scope.totsTime = formatTime(addTotalTime(project[0].timers));
         }
         //console.log($scope.project, $scope.getCurrentUser);
@@ -63,14 +65,14 @@ angular.module('workspaceApp')
     
     //this creates a new timer array within the projects timers
     $scope.startTimer = function(project, user){
-      var gateKey = false;
-      if(project.timers.length < 1){
+      var gateKey = true;
+      /*if(project.timers.length < 1){
         gateKey = true;
       } else {
         if(project.timers[project.timers.length - 1].end !== 'running'){
           gateKey = true;
         }
-      }
+      }*/
       if(gateKey){
         //$scope.timerOn = true;
         var newTimer = {
@@ -81,23 +83,40 @@ angular.module('workspaceApp')
         };
         project.timers.push(newTimer);
         $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: true });
+        $scope.timerOn = true;
       }
     };
     
     //this stops the latest timer array
     $scope.pauseTimer = function(project){
-      //$scope.timerOn = false;
-      project.timers[project.timers.length - 1].end = Date.now();
+      var index = -1;
+      for(var i=project.timers.length-1 ;i>-1;i--){
+        if(project.timers[i].user === $scope.getCurrentUser._id && project.timers[i].end === 'running'){
+          index = i;
+          break;
+        }
+      }
+      
+      project.timers[index].end = Date.now();
       var totalTimers = addTotalTime(project.timers);
       $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: false, totaltime: totalTimers });
+      $scope.timerOn = false;
     };
     
     //if the current project has a timer on it will then count up and format the time;
     //used in the interval
     function timeCounter(){
-      if($scope.project[0].timerOn){
+      if($scope.timerOn){
+        var index = -1;
+        for(var i=$scope.project[0].timers.length-1 ;i>-1;i--){
+          if($scope.project[0].timers[i].user === $scope.getCurrentUser._id && $scope.project[0].timers[i].end === 'running'){
+            index = i;
+            break;
+          }
+        }
+        
         //$scope.curTime = Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1][0]);
-        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[$scope.project[0].timers.length - 1].start));
+        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[index].start));
         var x = formatTime(currTime), totTime = formatTime($scope.project[0].totaltime + currTime);
         
         $('#curTime').text("Current time is: " + x);
@@ -199,14 +218,16 @@ angular.module('workspaceApp')
     //This function is used to close a project; it should end the a timer if it is running;
     //it will set the project.active as false
     $scope.closeProject = function(project){
+      var stopTime = Date.now();
       var result = window.confirm("Are you sure you want to close this Project?");
       if(result){
-        if(project.timers[project.timers.length-1].end === 'running'){
-          project.timerOn = false
-          project.timers[project.timers.length-1].end = Date.now();
-          project.totaltime = addTotalTime(project.timers);
-        }
-        $http.put('/api/projects/'+project._id, { active: false, timers: project.timers, totaltime: project.totaltime, timerOn: false });
+        $scope.timerOn = false;
+        project.timers.forEach(function(timer){
+          if(timer.end === 'running'){
+            timer.end = stopTime;
+          }
+        });
+        $http.put('/api/projects/'+project._id, { active: false, timers: project.timers, totaltime: addTotalTime(project.timers), timerOn: false });
       }
     };
     
