@@ -154,7 +154,7 @@ angular.module('workspaceApp')
     
     $scope.inviteUser = function(email, role, project){
       var check = project.invites.filter(function(invite){return invite.invited === email});
-      var role_check = role === 'contributer' || role === 'manager'
+      var role_check = role === 'Contributer' || role === 'Manager';
       if(check.length < 1 && role_check){
         var inv = {
           invited: email,
@@ -164,16 +164,17 @@ angular.module('workspaceApp')
         };
         project.invites.push(inv);
         $http.put('/api/projects/'+project._id, { invites: project.invites });
+        $('#invEmail').val('');
       }
-    }
+    };
     
     //adds the user to one of the main lists before passing the invite on to be
     //deleted.
     $scope.acceptInv = function(invite, user, project){
-      if(invite.role === 'manager' || invite.role === 'manage'){
+      if(invite.role === 'Manager' || invite.role === 'manage'){
         project.managers.push(user._id);
         user.managing.push(project._id);
-      } else if(invite.role === 'contributer' || invite.role === 'contrib'){
+      } else if(invite.role === 'Contributer' || invite.role === 'contrib'){
         project.contributers.push(user._id);
         user.contributing.push(project._id);
       }
@@ -225,9 +226,9 @@ angular.module('workspaceApp')
     $scope.formatCmtTime = function(time){
       var postTime = new Date(time);
       var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      var time = parseInt(postTime.getHours()) + ':' + parseInt(postTime.getMinutes()),
-      date = "\t" + months[postTime.getMonth()] + " " + parseInt(postTime.getDate());
+      var time2 = parseInt(postTime.getHours()) + ':' + parseInt(postTime.getMinutes()),
+      date = "\t" + months[postTime.getMonth()] + " " + parseInt(postTime.getDate())+" ";
       
-      return date + time;
+      return date + time2;
     };
   });

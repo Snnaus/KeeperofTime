@@ -12,9 +12,9 @@
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
             <form class='' role='search' ng-submit='inviteUser(addUser, role, project[0])' ng-hide='preview || !project[0].active'>
                 <div class='form-group'>
-                  <input type='text' class='form-control' placeholder='(User Email)' ng-model='addUser'>
-                  <input type='radio' value='manager' ng-model=role>Manager
-                  <input type='radio' value='contributer' ng-model=role> Contributer
+                  <input id=invEmail type='text' class='form-control' placeholder='(User Email)' ng-model='addUser'>
+                  <input type='radio' value='Manager' ng-model=role>Manager
+                  <input type='radio' value='Contributer' ng-model=role> Contributer
                 </div>
                 <button type='submit' class='btn btn-info'>Add User to Project</span></button>
              </form>
