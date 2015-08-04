@@ -22,8 +22,10 @@ angular.module('workspaceApp')
         }
         return minutes.toString() + ":" + seconds.toString();
     };
+    
+      var times = [input.start, input.end];
       
-      var inputs = input.map(function(time){
+      var inputs = times.map(function(time){
         if(time === 'running'){
           return time;
         } else{
@@ -44,9 +46,9 @@ angular.module('workspaceApp')
         }
       });
       var totaltime = '';
-      if(input[1] !== 'running'){
-        totaltime = " || Total Time: " + formatTime(input[1] - input[0]);
+      if(times[1] !== 'running'){
+        totaltime = " || Total Time: " + formatTime(times[1] - times[0]);
       }
-      return "Started: " + inputs[0] + " || Ended: " + inputs[1] + totaltime;  
+      return input.name + ":<br>Started: " + inputs[0] + " || Ended: " + inputs[1] + totaltime;  
     };
   });

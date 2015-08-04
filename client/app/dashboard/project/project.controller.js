@@ -65,26 +65,16 @@ angular.module('workspaceApp')
     
     //this creates a new timer array within the projects timers
     $scope.startTimer = function(project, user){
-      var gateKey = true;
-      /*if(project.timers.length < 1){
-        gateKey = true;
-      } else {
-        if(project.timers[project.timers.length - 1].end !== 'running'){
-          gateKey = true;
-        }
-      }*/
-      if(gateKey){
-        //$scope.timerOn = true;
-        var newTimer = {
-          start: Date.now(),
-          end: 'running',
-          title: '',
-          user: user._id
-        };
-        project.timers.push(newTimer);
-        $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: true });
-        $scope.timerOn = true;
-      }
+      var newTimer = {
+        start: Date.now(),
+        end: 'running',
+        title: '',
+        user: user._id,
+        name: user.name
+      };
+      project.timers.push(newTimer);
+      $http.put('/api/projects/'+project._id, { timers: project.timers, timerOn: true });
+      $scope.timerOn = true;
     };
     
     //this stops the latest timer array
