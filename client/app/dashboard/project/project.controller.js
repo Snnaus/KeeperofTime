@@ -38,7 +38,15 @@ angular.module('workspaceApp')
       //This is the logic gate to stop unrelated users from viewing the content.
       if($scope.contrib || $scope.manage || $scope.preview){
         $scope.project = project;
-        socket.syncUpdates('project', $scope.project);
+        socket.syncUpdates('project', $scope.project, function(event, item, object){
+          if(item.contributers.indexOf($scope.getCurrentUser._id) !== -1){
+            $scope.contrib = true;
+            $scope.preview = false;
+          } else if(item.managers.indexOf($scope.getCurrentUser._id) !== -1){
+            $scope.manage = true;
+            $scope.preview = false;
+          }
+        });
         
         var timerCheck = project[0].timers.filter(function(timer){ return timer.user === $scope.getCurrentUser._id && timer.end === 'running'  });
         if(timerCheck.length > 0){
@@ -222,7 +230,7 @@ angular.module('workspaceApp')
         invites: project.invites
       });
       $http.post('/api/users/'+user._id, { managing: user.managing, contributing: user.contributing });
-      $location.path('/projects/'+project._id);
+      //$location.path('/projects/'+project._id);
     }
     
     //This function is used to close a project; it should end the a timer if it is running;
@@ -249,5 +257,38 @@ angular.module('workspaceApp')
       date = "\t" + months[postTime.getMonth()] + " " + parseInt(postTime.getDate())+" ";
       
       return date + time2;
+    };
+    
+    //this function is to remove a user from the contributing/manager array, removing him from the project
+    $scope.leaveProj = function(project, user){
+      var result = window.confirm("Are you sure you want to leave this Project?");
+      if(result){
+        //removing the user from the projects arrays
+        var conIn = project.contributers.indexOf(user._id), manIn = project.managers.indexOf(user._id);
+        if(conIn !== -1){
+          var garbageCon = project.contributers.splice(conIn, 1);
+        }
+        if(manIn !== -1){
+          var garbageMan = project.managers.splice(manIn, 1);
+        }
+        
+        //Stopping any timers that the user has started
+        project.timers.forEach(function(timer){
+          if(timer.user === user._id && timer.end === 'running'){
+           timer.end = Date.now(); 
+          }
+        });
+        
+        //removing the project from the users arrays
+        if($scope.manage){
+          var garbageManU = user.managing.splice(user.managing.indexOf(project._id),1);
+        } else if($scope.contrib){
+          var garbageConU = user.contributing.splice(user.contributing.indexOf(project._id),1);
+        }
+        
+        $http.put('/api/projects/'+project._id, { contributers: project.contributers, managers: project.managers, timers: project.timers });
+        $http.post('/api/users/'+user._id, { managing: user.managing, contributing: user.contributing });
+        $location.path('/dashboard');
+      }
     };
   });

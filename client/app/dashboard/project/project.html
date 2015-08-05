@@ -16,7 +16,8 @@
                   <input type='radio' value='Manager' ng-model=role>Manager
                   <input type='radio' value='Contributer' ng-model=role> Contributer
                 </div>
-                <button type='submit' class='btn btn-info'>Add User to Project</span></button>
+                <button type='submit' class='btn btn-info'>Add User to Project</button>
+                <button class ='btn btn-danger' ng-click='leaveProj(project[0], getCurrentUser)'>Leave the project</button>
              </form>
              <button class='btn btn-success' ng-show='preview' ng-click='acceptInv(preview, getCurrentUser, project[0])'>Join Project as a {{preview.role}}</button>
              <button class='btn btn-danger' ng-show='preview' ng-click='declineInv(preview, project[0], getCurrentUser)'>Decline</button>
