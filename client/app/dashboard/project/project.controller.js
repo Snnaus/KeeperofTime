@@ -105,21 +105,25 @@ angular.module('workspaceApp')
           }
         }
         
+        
+        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[index].start));
+        var x = formatTime(currTime);
+        $('#curTime').text("Current time is: " + x);
+        
         var totTime = $scope.project[0].timers.reduce(function(agg, curr){
           if(curr.end === 'running'){
+            curr.total = Date.now() - curr.start;
             return parseInt(agg) + parseInt(Date.now() - curr.start);
           } else{
             return parseInt(agg) + parseInt(curr.end - curr.start);
           }
         }, 0);
-        var currTime = (Number(Date.now()) - Number($scope.project[0].timers[index].start));
-        var x = formatTime(currTime);
         $scope.totsTime = formatTime(totTime);
         
-        $('#curTime').text("Current time is: " + x);
       }else if($scope.project[0].timers.filter(function(timer){ return timer.end === 'running' }).length > 0){
         var totTime2 = $scope.project[0].timers.reduce(function(agg, curr){
           if(curr.end === 'running'){
+            curr.total = Date.now() - curr.start;
             return parseInt(agg) + parseInt(Date.now() - curr.start);
           } else{
             return parseInt(agg) + parseInt(curr.end - curr.start);

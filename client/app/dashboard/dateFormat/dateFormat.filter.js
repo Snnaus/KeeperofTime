@@ -48,6 +48,8 @@ angular.module('workspaceApp')
       var totaltime = '';
       if(times[1] !== 'running'){
         totaltime = " || Total Time: " + formatTime(times[1] - times[0]);
+      } else if(input.total){
+        totaltime = " || Total Time: " + formatTime(input.total);
       }
       return input.name + ":<br>Started: " + inputs[0] + " || Ended: " + inputs[1] + totaltime;  
     };
