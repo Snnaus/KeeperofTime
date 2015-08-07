@@ -18,19 +18,34 @@
         <div class='col-md-8'>
             <div ng-show='projectView'>
                 <h1>Contributing Projects</h1>
-                <h3 ng-repeat='project in projects'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+                <h3 dir-paginate='project in projects | itemsPerPage: 5' pagination-id='contribs'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+                <div id=pageControlHolder class='text-center' ng-show='projectView'>
+                  <dir-pagination-controls pagination-id='contribs'></dir-pagination-controls>
+                </div>
             </div>
             
             <div ng-show='manageView'>
                 <h1>Managing Projects</h1>
-                <h3 ng-repeat='project in managing'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+                <h3 dir-paginate='project in managing | itemsPerPage: 5' pagination-id='manage'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+                <div id=pageControlHolder class='text-center' ng-show='manageView'>
+                  <dir-pagination-controls pagination-id='manage'></dir-pagination-controls>
+                </div>
             </div>
             
             <div ng-show='invView'>
                 <h1>Invited Projects</h1>
-                <h3 ng-repeat='project in invited'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+                <h3 dir-paginate='project in invited | itemsPerPage: 5' pagination-id='invite'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+                <div id=pageControlHolder class='text-center' ng-show='invView'>
+                  <dir-pagination-controls pagination-id='invite'></dir-pagination-controls>
+                </div>
             </div>
         </div>
-        
+        <div class='col-md-4'>
+            <h3>Recent Messages</h3>
+            <ol>
+                <li ng-repeat='msg in recentMsgs track by $index'><a href="/project/{{msg.projID}}">{{msg.project}}</a>: {{msg.user}}: {{formatCmtTime(msg.time)}} <br> &nbsp;&nbsp;&nbsp;&nbsp; {{msg.message}}</li>
+            </ol>
+        </div>
     </div>
+    
 </div>

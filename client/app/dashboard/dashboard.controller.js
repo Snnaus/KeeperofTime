@@ -19,25 +19,30 @@ angular.module('workspaceApp')
     $scope.projectView = true;
     $scope.manageView = false;
     $scope.invView = false;
+    $scope.recentMsgs = [];
     
     $http.post('/api/projects/user', { contributers: $scope.getCurrentUser._id }).success(function(projects){
       $scope.projects = projects;
+      $scope.recentMsgs = updateRecentMsgs(projects, $scope.recentMsgs);
       socket.syncUpdates('project', $scope.projects, function(event, item, object){
         //this removes the updated object if the current user is not a contributer
         if(item.contributers[0] !== $scope.getCurrentUser._id){
           var garbage = object.splice(-1, 1);
         }
         $scope.projects = object;
+        $scope.recentMsgs = updateRecentMsgs(object, $scope.recentMsgs);
       });
     });
     $http.post('/api/projects/user', { managers: $scope.getCurrentUser._id }).success(function(projects){
       $scope.managing = projects;
+      $scope.recentMsgs = updateRecentMsgs(projects, $scope.recentMsgs);
       socket.syncUpdates('project', $scope.managing, function(event, item, object){
         //this removes the updated object if the current user is not a manager
         if(item.managers[0] !== $scope.getCurrentUser._id){
           var garbage = object.splice(-1, 1);
         }
         $scope.managing = object;
+        $scope.recentMsgs = updateRecentMsgs(object, $scope.recentMsgs);
       });
     });
     $http.post('/api/projects/user', { 'invites.invited': $scope.getCurrentUser.email }).success(function(projects){
@@ -66,8 +71,8 @@ angular.module('workspaceApp')
           name: name,
           info: '',
           active: true,
-          timers: [],
-          timerOn: false,
+          messages: [],
+          messageOn: false,
           totaltime: 0,
           contributers: [user._id],
           managers: [],
@@ -103,5 +108,38 @@ angular.module('workspaceApp')
         $scope.invView = true;
         $('#invites').addClass('active');
       }
+    };
+    
+    var updateRecentMsgs = function(projects, msgs){
+      
+      var msgIDs = msgs.map(function(msg){ return msg.msgID });
+      
+      projects.forEach(function(project){
+        project.messages.forEach(function(message){
+          if(msgIDs.indexOf(message.msgID) === -1){
+            msgs.push(message);
+            msgIDs.push(message.msgID);
+          }
+        });
+      });
+      
+      msgs = msgs.sort(function(a, b){
+        return b.time - a.time;
+      });
+      if(msgs.length > 10){
+        var garbage = msgs.splice(9, msgs.length-10);
+      }
+      
+      return msgs;
+    };
+    
+    //this function is to format the comment post time to be readable
+    $scope.formatCmtTime = function(time){
+      var postTime = new Date(time);
+      var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      var time2 = parseInt(postTime.getHours()) + ':' + parseInt(postTime.getMinutes()),
+      date = "\t" + months[postTime.getMonth()] + " " + parseInt(postTime.getDate())+" ";
+      
+      return date + time2;
     };
   });

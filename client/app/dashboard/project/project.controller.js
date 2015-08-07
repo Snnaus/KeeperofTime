@@ -69,7 +69,9 @@ angular.module('workspaceApp')
           message: message, 
           time: Date.now(), 
           userId: user._id,
-          msgID: project._id+user._id+Date.now()
+          msgID: project._id+user._id+Date.now(),
+          project: project.name,
+          projID: project._id
           };
         project.messages.push(message);
         $http.put('/api/projects/'+project._id, { messages: project.messages });
