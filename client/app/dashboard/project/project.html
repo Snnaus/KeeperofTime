@@ -36,7 +36,7 @@
         <div class='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
             <h3>Messages</h3>
             <ol>
-                <li ng-repeat='msg in project[0].messages track by $index'>{{msg[0]}}: {{formatCmtTime(msg[2])}} <br> &nbsp;&nbsp;&nbsp;&nbsp; {{msg[1]}}</li>
+                <li ng-repeat='msg in project[0].messages track by $index'>{{msg.user}}: {{formatCmtTime(msg.time)}} <br> &nbsp;&nbsp;&nbsp;&nbsp; {{msg.message}}</li>
             </ol>
             <form ng-submit='sendMsg(project[0], newMsg, getCurrentUser)' ng-hide='preview || !project[0].active'>
                <textarea id='msgArea' class="form-control" rows="3" ng-model='newMsg'></textarea>

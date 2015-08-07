@@ -64,7 +64,13 @@ angular.module('workspaceApp')
     $scope.newMsg = '';
     $scope.sendMsg = function(project, message, user){
       if(message){
-        message = [user.name, message, Date.now(), user._id];
+        message = {
+          user: user.name, 
+          message: message, 
+          time: Date.now(), 
+          userId: user._id,
+          msgID: project._id+user._id+Date.now()
+          };
         project.messages.push(message);
         $http.put('/api/projects/'+project._id, { messages: project.messages });
         $('#msgArea').val('');
