@@ -16,6 +16,10 @@ angular.module('workspaceApp')
     $scope.projects = [];
     $scope.managing = [];
     $scope.invited = [];
+    $scope.projectView = true;
+    $scope.manageView = false;
+    $scope.invView = false;
+    
     $http.post('/api/projects/user', { contributers: $scope.getCurrentUser._id }).success(function(projects){
       $scope.projects = projects;
       socket.syncUpdates('project', $scope.projects, function(event, item, object){
@@ -78,5 +82,26 @@ angular.module('workspaceApp')
         $('#titleInp').val('');
         });
     }  
+    };
+    
+    $scope.changeArea = function(area){
+      $scope.projectView = false;
+      $scope.manageView = false;
+      $scope.invView = false;
+      var allAreas = ['#project', '#manage', '#invites'];
+      allAreas.forEach(function(item){
+        $(item).removeClass('active');
+      });
+      
+      if(area == 'project'){
+        $scope.projectView = true;
+        $("#project").addClass('active');
+      } else if(area == 'manage'){
+        $scope.manageView = true;
+        $('#manage').addClass('active');
+      } else{
+        $scope.invView = true;
+        $('#invites').addClass('active');
+      }
     };
   });

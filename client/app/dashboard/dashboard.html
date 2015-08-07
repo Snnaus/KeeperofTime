@@ -1,8 +1,6 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
 <div class='container'>
-    This is the dashboard.
-    
     <form class='' role='search' ng-submit='createProj(newTitle, getCurrentUser)'>
         <div class='form-group'>
           <input id=titleInp type='text' class='form-control' placeholder='' ng-model='newTitle'>
@@ -10,12 +8,29 @@
         <button type='submit' class='btn btn-success'>Create Project</span></button>
      </form>
     
-    <h1>Contributing Projects</h1>
-    <h3 ng-repeat='project in projects'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+    <ul id=tabs class="nav nav-tabs" role="tablist">
+        <li id=project role="presentation" class="active"><a ng-click="changeArea('project')" aria-controls="home" role="tab" data-toggle="tab">Projects</a></li>
+        <li id=manage role="presentation"><a ng-click="changeArea('manage')" aria-controls="profile" role="tab" data-toggle="tab">Managing Projects</a></li>
+        <li id=invites role="presentation"><a ng-click="changeArea('invite')" aria-controls="messages" role="tab" data-toggle="tab">Invites</a></li>
+    </ul>
     
-    <h1>Managing Projects</h1>
-    <h3 ng-repeat='project in managing'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
-    
-    <h1>Invited Projects</h1>
-    <h3 ng-repeat='project in invited'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+    <div class='row'>
+        <div class='col-md-8'>
+            <div ng-show='projectView'>
+                <h1>Contributing Projects</h1>
+                <h3 ng-repeat='project in projects'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+            </div>
+            
+            <div ng-show='manageView'>
+                <h1>Managing Projects</h1>
+                <h3 ng-repeat='project in managing'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+            </div>
+            
+            <div ng-show='invView'>
+                <h1>Invited Projects</h1>
+                <h3 ng-repeat='project in invited'><a ng-href="/project/{{project['_id']}}">{{project.name}}</a></h3>
+            </div>
+        </div>
+        
+    </div>
 </div>
